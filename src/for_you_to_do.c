@@ -32,7 +32,8 @@ int mydgetrf(double *A, int *ipiv, int n)
     int i, maxIndex;
     double max;
     double *temprow = (double*) malloc(sizeof(double) * n);
-    for (i = 0; i < n; i++)
+    i=0;
+    for (i; i < n; i++)
     {
         // pivoting
         maxIndex = i;
@@ -49,7 +50,6 @@ int mydgetrf(double *A, int *ipiv, int n)
         }
         if (max == 0)
         {
-            printf("LU factorization failed: coefficient matrix is singular.\n");
             return -1;
         }
         else
@@ -161,6 +161,74 @@ void mydgemm(double *A, double *B, double *C, int n, int i, int j, int k, int b)
 {
     /* add your code here */
     /* please just copy from your lab1 function optimal( ... ) */
+    int i=0,j=0,k=0;
+        for (i; i < n; i += b) {
+                j=0;
+                for (j; j < n; j += b) {
+                    k=0;
+                    for (k; k < n; k += b) {
+                        int i1 = i, j1 = j, k1 = k;
+                        int ni = i + b > n ? n : i + b;
+                        int nj = j + b > n ? n : j + b;
+                        int nk = k + b > n ? n : k + b;
+                        for (i1; i1 < ni; i1 += 3) {
+                            j1=j;
+                            for (j1; j1 < nj; j1 += 3) {
+                                int t = i1 * n + j1;
+                                int tt = t + n;
+                                int ttt = tt + n;
+                                register double c00 = C[t];
+                                register double c01 = C[t + 1];
+                                register double c02 = C[t + 2];
+                                register double c10 = C[tt];
+                                register double c11 = C[tt + 1];
+                                register double c12 = C[tt + 2];
+                                register double c20 = C[ttt];
+                                register double c21 = C[ttt + 1];
+                                register double c22 = C[ttt + 2];
+
+                                k1=k;
+                                for (k1; k1 < nk; k1 += 3) {
+                                    int l=0;
+                                    for (l; l < 3; l++) {
+                                        int ta = i1 * n + k1 + l;
+                                        int tta = ta + n;
+                                        int ttta = tta + n;
+                                        int tb = k1 * n + j1 + l * n;
+                                        register double a0 = A[ta];
+                                        register double a1 = A[tta];
+                                        register double a2 = A[ttta];
+                                        register double b0 = B[tb];
+                                        register double b1 = B[tb + 1];
+                                        register double b2 = B[tb + 2];
+
+                                        c00 += a0 * b0;
+                                        c01 += a0 * b1;
+                                        c02 += a0 * b2;
+                                        c10 += a1 * b0;
+                                        c11 += a1 * b1;
+                                        c12 += a1 * b2;
+                                        c20 += a2 * b0;
+                                        c21 += a2 * b1;
+                                        c22 += a2 * b2;
+                                    }
+                                }
+                                C[t] = c00;
+                                C[t + 1] = c01;
+                                C[t + 2] = c02;
+                                C[tt] = c10;
+                                C[tt + 1] = c11;
+                                C[tt + 2] = c12;
+                                C[ttt] = c20;
+                                C[ttt + 1] = c21;
+                                C[ttt + 2] = c22;
+
+                            }
+                        }
+                    }
+                }
+            }
+
     return;
 }
 
