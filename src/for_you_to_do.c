@@ -30,7 +30,7 @@ int mydgetrf(double *A, int *ipiv, int n)
 {
     /* add your code here */
 
-    return 0;
+    return -1;
 }
 
 /**
