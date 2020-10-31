@@ -3,7 +3,7 @@
 int get_block_size(){
     //return the block size you'd like to use 
     /*add your code here */
-    return 139;
+    return 128;
   
 }
 
@@ -29,7 +29,58 @@ int get_block_size(){
 int mydgetrf(double *A, int *ipiv, int n) 
 {
     /* add your code here */
+    int i, maxIndex;
+    double max;
+    double *temprow = (double*) malloc(sizeof(double) * n);
+    for (i = 0; i < n; i++)
+    {
+        // pivoting
+        maxIndex = i;
+        max = fabs(A[i*n + i]);
+        
+        int j=i+1;
+        for (j; j < n; j++)
+        {
+            if (fabs(A[j*n + i]) > max)
+            {
+                maxIndex = j;
+                max = fabs(A[j*n + i]);
+            }
+        }
+        if (max == 0)
+        {
+            printf("LU factorization failed: coefficient matrix is singular.\n");
+            return -1;
+        }
+        else
+        {
+            if (maxIndex != i)
+            {
+                // save pivoting information
+                int temp = ipiv[i];
+                ipiv[i] = ipiv[maxIndex];
+                ipiv[maxIndex] = temp;
+                // swap rows
+                memcpy(temprow, A + i*n, n * sizeof(double));
+                memcpy(A + i*n, A + maxIndex*n, n * sizeof(double));
+                memcpy(A + maxIndex*n, temprow, n * sizeof(double));
+            }
+        }
 
+        // factorization
+        j=i+1;
+        for (j; j < n; j++)
+        {
+            A[j*n + i] = A[j*n + i] / A[i*n + i];
+            int k;
+            for (k = i+1; k < n; k++)
+            {
+                A[j*n + k] -= A[j*n +i] * A[i*n + k];
+            }
+        }
+    }
+    free(temprow);
+    return 0;
     return 0;
 }
 
