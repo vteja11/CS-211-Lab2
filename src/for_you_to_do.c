@@ -262,6 +262,85 @@ void mydgemm(double *A, double *B, double *C, int n, int i, int j, int k, int b)
  **/
 int mydgetrf_block(double *A, int *ipiv, int n, int b) 
 {
+    int ib, i, j, k, maxIndex;
+    double max, sum;
+    double *temprow = (double*) malloc(sizeof(double) * n);
+
+    ib=0;
+    for (ib ; ib < n; ib += b)
+    {
+        i=ib;
+        for (i ; i < ib+b && i < n; i++)
+        {
+            // pivoting
+            maxIndex = i;
+            max = fabs(A[i*n + i]);
+            
+            int j=i+1;
+            for (j ; j < n; j++)
+            {
+                if (fabs(A[j*n + i]) > max)
+                {
+                    maxIndex = j;
+                    max = fabs(A[j*n + i]);
+                }
+            }
+            if (max == 0)
+            {
+                return -1;
+            }
+            else
+            {
+                if (maxIndex != i)
+                {
+                    int temp = PVT[i];
+                    PVT[i] = PVT[maxIndex];
+                    PVT[maxIndex] = temp;
+
+                    memcpy(temprow, A + i*n, n * sizeof(double));
+                    memcpy(A + i*n, A + maxIndex*n, n * sizeof(double));
+                    memcpy(A + maxIndex*n, temprow, n * sizeof(double));
+                }
+            }
+
+            j=i+1;
+            for (j ; j < n; j++)
+            {
+                A[j*n + i] = A[j*n + i] / A[i*n + i];
+                int k=i+1;
+                for (k ; k < ib+b && k < n; k++)
+                {
+                    A[j*n + k] -= A[j*n +i] * A[i*n + k];
+                }
+            }
+        }
+
+        i=ib;
+        for (i ; i < ib+b && i < n; i++)
+        {
+            j=ib+b;
+            for (j; j < n; j++)
+            {
+                sum = 0;
+                k=ib;
+                for (k ; k < i; k++)
+                {
+                    sum += A[i*n + k] * A[k*n + j];
+                }
+                A[i*n + j] -= sum;
+            }
+        }
+
+        i=ib+b;
+        for (i; i < n; i += b)
+        {
+            j=ib+b;
+            for (j; j < n; j += b)
+            {
+                mydgemm(A, A, A, n, i, j, ib, b);
+            }
+        }
+    }
     return 0;
 }
 
