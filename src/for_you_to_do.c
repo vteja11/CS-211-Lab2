@@ -81,7 +81,6 @@ int mydgetrf(double *A, int *ipiv, int n)
     }
     free(temprow);
     return 0;
-    return 0;
 }
 
 /**
@@ -119,7 +118,7 @@ void mydtrsv(char UPLO, double *A, double *B, int n, int *ipiv)
     double sum;
     if (UPLO == 'L')
     {
-        y[0] = B[PVT[0]];
+        y[0] = B[ipiv[0]];
         i=1;
         for (i; i < n; i++)
         {
@@ -129,7 +128,7 @@ void mydtrsv(char UPLO, double *A, double *B, int n, int *ipiv)
             {
                 sum += y[j] * A[i*n + j];
             }
-            y[i] = B[PVT[i]] - sum;
+            y[i] = B[ipiv[i]] - sum;
         }
     }
     else if (UPLO == 'U')
