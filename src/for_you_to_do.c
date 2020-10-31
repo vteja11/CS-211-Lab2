@@ -216,6 +216,7 @@ void mydgemm(double *A, double *B, double *C, int n, int i, int j, int k, int b)
                     c22 -= a2 * b2;
                 }
             }
+            //write
             C[t] = c00;
             C[t + 1] = c01;
             C[t + 2] = c02;
