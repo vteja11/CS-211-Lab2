@@ -216,15 +216,15 @@ void mydgemm(double *A, double *B, double *C, int n, int i, int j, int k, int b)
                     c22 -= a2 * b2;
                 }
             }
-            c[t] = c00;
-            c[t + 1] = c01;
-            c[t + 2] = c02;
-            c[tt] = c10;
-            c[tt + 1] = c11;
-            c[tt + 2] = c12;
-            c[ttt] = c20;
-            c[ttt + 1] = c21;
-            c[ttt + 2] = c22;
+            C[t] = c00;
+            C[t + 1] = c01;
+            C[t + 2] = c02;
+            C[tt] = c10;
+            C[tt + 1] = c11;
+            C[tt + 2] = c12;
+            C[ttt] = c20;
+            C[ttt + 1] = c21;
+            C[ttt + 2] = c22;
         }
     }
     return;
