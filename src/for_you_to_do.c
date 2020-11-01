@@ -166,9 +166,9 @@ void mydgemm(double *A, double *B, double *C, int n, int i, int j, int k, int b)
     /* add your code here */
     /* please just copy from your lab1 function optimal( ... ) */
     int i1 = i, j1 = j, k1 = k;
-    int ni = i + blocksize > n ? n : i + blocksize;
-    int nj = j + blocksize > n ? n : j + blocksize;
-    int nk = k + blocksize > n ? n : k + blocksize;
+    int ni = i + b > n ? n : i + b;
+    int nj = j + b > n ? n : j + b;
+    int nk = k + b > n ? n : k + b;
 
     for (i1 = i; i1 < ni; i1 += 3)
     {
