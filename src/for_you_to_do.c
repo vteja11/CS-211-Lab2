@@ -3,7 +3,7 @@
 int get_block_size(){
     //return the block size you'd like to use 
     /*add your code here */
-    return 126;
+    return 128;
   
 }
 
@@ -29,7 +29,6 @@ int get_block_size(){
 int mydgetrf(double *A, int *ipiv, int n) 
 {
     /* add your code here */
-    /*
     int i, maxIndex;
     double max;
     double *temprow = (double*) malloc(sizeof(double) * n);
@@ -81,7 +80,6 @@ int mydgetrf(double *A, int *ipiv, int n)
         }
     }
     free(temprow);
-    */
     return 0;
 }
 
@@ -115,7 +113,6 @@ int mydgetrf(double *A, int *ipiv, int n)
 void mydtrsv(char UPLO, double *A, double *B, int n, int *ipiv)
 {
     /* add your code here */
-    /*
     double *y = (double*) malloc(n * sizeof(double));
     int i, j;
     double sum;
@@ -152,7 +149,6 @@ void mydtrsv(char UPLO, double *A, double *B, int n, int *ipiv)
 
     memcpy(B, y, sizeof(double) * n);
     free(y);
-    */
     return;
 }
 
@@ -189,7 +185,7 @@ void mydgemm(double *A, double *B, double *C, int n, int i, int j, int k, int b)
 
             for (k1 = k; k1 < nk; k1 += 3)
             {
-                int l=0;;
+                int l;
                 for (l = 0; l < 3; l++)
                 {
                     int ta = i1 * n + k1 + l;
