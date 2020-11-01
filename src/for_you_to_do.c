@@ -3,9 +3,11 @@
 int get_block_size(){
     //return the block size you'd like to use 
     /*add your code here */
-    //int a[] ={99,129,150,177,270};
+
+    // for testing purpose
+    //int a[] ={99,129,132,150,177,270};
     //return a[i];
-    return 99;
+    return 132;
   
 }
 
@@ -32,14 +34,16 @@ int mydgetrf(double *A, int *ipiv, int n)
 {
     /* add your code here */
     
-    int i, maxIndex;
+    int i, max_i;
     double max;
-    double *temprow = (double*) malloc(sizeof(double) * n);
+    double *row_tmp = (double*) malloc(sizeof(double) * n);
+    
+    //
     i=0;
     for (i; i < n; i++)
     {
-        // pivoting
-        maxIndex = i;
+        // we are pivoting in this step
+        max_i = i;
         max = fabs(A[i*n + i]);
         
         int j=i+1;
@@ -47,26 +51,29 @@ int mydgetrf(double *A, int *ipiv, int n)
         {
             if (fabs(A[j*n + i]) > max)
             {
-                maxIndex = j;
+                max_i = j;
                 max = fabs(A[j*n + i]);
             }
         }
+
+        //check for singular matrix case after pivoting
         if (max == 0)
         {     
             return -1;
         }
         else
         {
-            if (maxIndex != i)
+            if (max_i != i)
             {
-                // save pivoting information
+                // pivoting information is strored in this step
                 int temp = ipiv[i];
-                ipiv[i] = ipiv[maxIndex];
-                ipiv[maxIndex] = temp;
-                // swap rows
-                memcpy(temprow, A + i*n, n * sizeof(double));
-                memcpy(A + i*n, A + maxIndex*n, n * sizeof(double));
-                memcpy(A + maxIndex*n, temprow, n * sizeof(double));
+                ipiv[i] = ipiv[max_i];
+                ipiv[max_i] = temp;
+
+                // swapiing the rows
+                memcpy(row_tmp, A + i*n, n * sizeof(double));
+                memcpy(A + i*n, A + max_i*n, n * sizeof(double));
+                memcpy(A + max_i*n, row_tmp, n * sizeof(double));
             }
         }
 
@@ -82,7 +89,7 @@ int mydgetrf(double *A, int *ipiv, int n)
             }                   
         }
     }
-    free(temprow);
+    free(row_tmp);
     return 0;
 }
 
@@ -120,6 +127,8 @@ void mydtrsv(char UPLO, double *A, double *B, int n, int *ipiv)
     double *y = (double*) malloc(n * sizeof(double));
     int i, j;
     double sum;
+
+    //if lower triangular matrix
     if (UPLO == 'L')
     {
         y[0] = B[ipiv[0]];
@@ -135,6 +144,7 @@ void mydtrsv(char UPLO, double *A, double *B, int n, int *ipiv)
             y[i] = B[ipiv[i]] - sum;
         }
     }
+    //if upper triangular matrix
     else if (UPLO == 'U')
     {
         y[n - 1] = B[n - 1] / A[(n-1)*n + n-1];
@@ -166,64 +176,75 @@ void mydgemm(double *A, double *B, double *C, int n, int i, int j, int k, int b)
 {
     /* add your code here */
     /* please just copy from your lab1 function optimal( ... ) */
-    int i1 = i, j1 = j, k1 = k;
-    int ni = i + b > n ? n : i + b;
-    int nj = j + b > n ? n : j + b;
-    int nk = k + b > n ? n : k + b;
 
-    for (i1 = i; i1 < ni; i1 += 3)
+    //code from lab1
+    int i_tmp = i, j_tmp = j, k_tmp = k;
+
+    //boundary for i
+    int n1 = i + b > n ? n : i + b;
+    //boundary for j
+    int n2 = j + b > n ? n : j + b;
+    //boundary for k
+    int n3 = k + b > n ? n : k + b;
+
+    for (i_tmp = i; i_tmp < n1; i_tmp += 3)
     {
-        for (j1 = j; j1 < nj; j1 += 3)
+        for (j_tmp = j; j_tmp < n2; j_tmp += 3)
         {
-            int t = i1 * n + j1;
-            int tt = t + n;
-            int ttt = tt + n;
-            register double c00 = C[t];
-            register double c01 = C[t + 1];
-            register double c02 = C[t + 2];
-            register double c10 = C[tt];
-            register double c11 = C[tt + 1];
-            register double c12 = C[tt + 2];
-            register double c20 = C[ttt];
-            register double c21 = C[ttt + 1];
-            register double c22 = C[ttt + 2];
+            int t = i_tmp * n + j_tmp;
+            int t2 = t + n;
+            int t3 = t2 + n;
 
-            for (k1 = k; k1 < nk; k1 += 3)
+            //registers for C
+            register double c1 = C[t];
+            register double c2 = C[t + 1];
+            register double c3 = C[t + 2];
+            register double c4 = C[t2];
+            register double c5 = C[t2 + 1];
+            register double c6 = C[t2 + 2];
+            register double c7 = C[t3];
+            register double c8 = C[t3 + 1];
+            register double c9 = C[t3 + 2];
+
+            for (k_tmp = k; k_tmp < n3; k_tmp += 3)
             {
                 int l;
                 for (l = 0; l < 3; l++)
                 {
-                    int ta = i1 * n + k1 + l;
-                    int tta = ta + n;
-                    int ttta = tta + n;
-                    int tb = k1 * n + j1 + l * n;
+                    int ta = i_tmp * n + k_tmp + l;
+                    int t2a = ta + n;
+                    int t3a = t2a + n;
+                    int tb = k_tmp * n + j_tmp + l * n;
+
+                    // registers for A 
                     register double a0 = A[ta];
-                    register double a1 = A[tta];
-                    register double a2 = A[ttta];
+                    register double a1 = A[t2a];
+                    register double a2 = A[t3a];
+                    // registers for B
                     register double b0 = B[tb];
                     register double b1 = B[tb + 1];
                     register double b2 = B[tb + 2];
 
-                    c00 -= a0 * b0;
-                    c01 -= a0 * b1;
-                    c02 -= a0 * b2;
-                    c10 -= a1 * b0;
-                    c11 -= a1 * b1;
-                    c12 -= a1 * b2;
-                    c20 -= a2 * b0;
-                    c21 -= a2 * b1;
-                    c22 -= a2 * b2;
+                    c1 -= a0 * b0;
+                    c2 -= a0 * b1;
+                    c3 -= a0 * b2;
+                    c4 -= a1 * b0;
+                    c5 -= a1 * b1;
+                    c6 -= a1 * b2;
+                    c7 -= a2 * b0;
+                    c8 -= a2 * b1;
+                    c9 -= a2 * b2;
                 }
             }
-            C[t] = c00;
+            C[t] = c1;
             C[t + 1] = c01;
-            C[t + 2] = c02;
-            C[tt] = c10;
-            C[tt + 1] = c11;
-            C[tt + 2] = c12;
-            C[ttt] = c20;
-            C[ttt + 1] = c21;
-            C[ttt + 2] = c22;
+            C[t + 2] = c3;
+            C[t2] = c4;
+            C[t2 + 1] = c5;
+            C[t2 + 2] = c6;
+            C[t3] = c7;
+            C[t3 + 1] = c8;
+            C[t3 + 2] = c9;
         }
     }
     return;
@@ -259,16 +280,17 @@ void mydgemm(double *A, double *B, double *C, int n, int i, int j, int k, int b)
  **/
 int mydgetrf_block(double *A, int *ipiv, int n, int b) 
 {
-    int ib, i, j, k, maxIndex;
+    int i_block,  max_i, i, j, k;
+    
+    double *row_tmp = (double*) malloc(sizeof(double) * n);
     double max, sum;
-    double *temprow = (double*) malloc(sizeof(double) * n);
 
-    for (ib = 0; ib < n; ib += b)
+    for (i_block = 0; i_block < n; i_block += b)
     {
-        for (i = ib; i < ib+b && i < n; i++)
+        for (i = i_block; i < i_block+b && i < n; i++)
         {
-            // pivoting
-            maxIndex = i;
+            // we are pivoting in this step
+            max_i = i;
             max = fabs(A[i*n + i]);
             
             int j;
@@ -276,26 +298,29 @@ int mydgetrf_block(double *A, int *ipiv, int n, int b)
             {
                 if (fabs(A[j*n + i]) > max)
                 {
-                    maxIndex = j;
+                    max_i = j;
                     max = fabs(A[j*n + i]);
                 }
             }
+
+            //check for singular matrix 
             if (max == 0)
             {
                 return -1;
             }
             else
             {
-                if (maxIndex != i)
+                if (max_i != i)
                 {
-                    // save pivoting information
+                    // pivoting information is stored here
                     int temp = ipiv[i];
-                    ipiv[i] = ipiv[maxIndex];
-                    ipiv[maxIndex] = temp;
+                    ipiv[i] = ipiv[max_i];
+                    ipiv[max_i] = temp;
+                    
                     // swap rows
-                    memcpy(temprow, A + i*n, n * sizeof(double));
-                    memcpy(A + i*n, A + maxIndex*n, n * sizeof(double));
-                    memcpy(A + maxIndex*n, temprow, n * sizeof(double));
+                    memcpy(row_tmp, A + i*n, n * sizeof(double));
+                    memcpy(A + i*n, A + max_i*n, n * sizeof(double));
+                    memcpy(A + max_i*n, row_tmp, n * sizeof(double));
                 }
             }
 
@@ -304,20 +329,20 @@ int mydgetrf_block(double *A, int *ipiv, int n, int b)
             {
                 A[j*n + i] = A[j*n + i] / A[i*n + i];
                 int k;
-                for (k = i+1; k < ib+b && k < n; k++)
+                for (k = i+1; k < i_block+b && k < n; k++)
                 {
                     A[j*n + k] -= A[j*n +i] * A[i*n + k];
                 }
             }
         }
 
-        // update A(ib:end, end+1:n)
-        for (i = ib; i < ib+b && i < n; i++)
+        // updating  A from A[i,j] as i=i_block:end of block, j=end_of_block+1:n
+        for (i = i_block; i < i_block+b && i < n; i++)
         {
-            for (j = ib+b; j < n; j++)
+            for (j = i_block+b; j < n; j++)
             {
                 sum = 0;
-                for (k = ib; k < i; k++)
+                for (k = i_block; k < i; k++)
                 {
                     sum += A[i*n + k] * A[k*n + j];
                 }
@@ -325,12 +350,12 @@ int mydgetrf_block(double *A, int *ipiv, int n, int b)
             }
         }
 
-        // update A(end+1:n, end+1:n)
-        for (i = ib+b; i < n; i += b)
+        // updating A from A[i,j] as i=end of block+1:n, end of block+1:n)
+        for (i = i_block+b; i < n; i += b)
         {
-            for (j = ib+b; j < n; j += b)
+            for (j = i_block+b; j < n; j += b)
             {
-                mydgemm(A, A, A, n, i, j, ib, b);
+                mydgemm(A, A, A, n, i, j, i_block, b);
             }
         }
     }
