@@ -22,11 +22,11 @@
 
 int test_all_lu_functions()
 {
-    int block_size=126
+    int block_size=126;
     int ni, nList[] = {2000, 2000, 2000, 2000, 2000};
     for (ni = 0; ni < sizeof(nList) / sizeof(nList[0]); ni++) {
         int n = nList[ni], i, j;
-        
+
         block_size=get_block_size(ni);
 
         // feel free to modify the block size by yourself.
