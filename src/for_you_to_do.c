@@ -237,7 +237,7 @@ void mydgemm(double *A, double *B, double *C, int n, int i, int j, int k, int b)
                 }
             }
             C[t] = c1;
-            C[t + 1] = c01;
+            C[t + 1] = c2;
             C[t + 2] = c3;
             C[t2] = c4;
             C[t2 + 1] = c5;
