@@ -3,7 +3,7 @@
 int get_block_size(){
     //return the block size you'd like to use 
     /*add your code here */
-    return 128;
+    return 126;
   
 }
 
@@ -166,14 +166,13 @@ void mydgemm(double *A, double *B, double *C, int n, int i, int j, int k, int b)
     /* add your code here */
     /* please just copy from your lab1 function optimal( ... ) */
     int i1 = i, j1 = j, k1 = k;
-    int ni = i + b > n ? n : i + b;
-    int nj = j + b > n ? n : j + b;
-    int nk = k + b > n ? n : k + b;
+    int ni = i + blocksize > n ? n : i + blocksize;
+    int nj = j + blocksize > n ? n : j + blocksize;
+    int nk = k + blocksize > n ? n : k + blocksize;
 
-    for (i1; i1 < ni; i1 += 3)
+    for (i1 = i; i1 < ni; i1 += 3)
     {
-        j1=j;
-        for (j1 ; j1 < nj; j1 += 3)
+        for (j1 = j; j1 < nj; j1 += 3)
         {
             int t = i1 * n + j1;
             int tt = t + n;
@@ -188,11 +187,10 @@ void mydgemm(double *A, double *B, double *C, int n, int i, int j, int k, int b)
             register double c21 = C[ttt + 1];
             register double c22 = C[ttt + 2];
 
-            k1=k;
-            for (k1; k1 < nk; k1 += 3)
+            for (k1 = k; k1 < nk; k1 += 3)
             {
-                int l=0;
-                for (l ; l < 3; l++)
+                int l=0;;
+                for (l = 0; l < 3; l++)
                 {
                     int ta = i1 * n + k1 + l;
                     int tta = ta + n;
@@ -216,7 +214,6 @@ void mydgemm(double *A, double *B, double *C, int n, int i, int j, int k, int b)
                     c22 -= a2 * b2;
                 }
             }
-            //write
             C[t] = c00;
             C[t + 1] = c01;
             C[t + 2] = c02;
