@@ -22,12 +22,12 @@
 
 int test_all_lu_functions()
 {
-    int block_size=126;
-    int ni, nList[] = {2000, 2000, 2000, 2000, 2000};
+    int block_size=99;
+    int ni, nList[] = {1000, 2000, 3000, 4000, 5000};
     for (ni = 0; ni < sizeof(nList) / sizeof(nList[0]); ni++) {
         int n = nList[ni], i, j;
 
-        block_size=get_block_size(ni);
+        //block_size=get_block_size(ni);
 
         // feel free to modify the block size by yourself.
         if (n % block_size !=0){
