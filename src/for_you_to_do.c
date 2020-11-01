@@ -265,18 +265,16 @@ int mydgetrf_block(double *A, int *ipiv, int n, int b)
     double max, sum;
     double *temprow = (double*) malloc(sizeof(double) * n);
 
-    ib=0;
-    for (ib ; ib < n; ib += b)
+    for (ib = 0; ib < n; ib += b)
     {
-        i=ib;
-        for (i ; i < ib+b && i < n; i++)
+        for (i = ib; i < ib+b && i < n; i++)
         {
             // pivoting
             maxIndex = i;
             max = fabs(A[i*n + i]);
             
-            int j=i+1;
-            for (j ; j < n; j++)
+            int j;
+            for (j = i+1; j < n; j++)
             {
                 if (fabs(A[j*n + i]) > max)
                 {
@@ -292,37 +290,36 @@ int mydgetrf_block(double *A, int *ipiv, int n, int b)
             {
                 if (maxIndex != i)
                 {
+                    // save pivoting information
                     int temp = ipiv[i];
                     ipiv[i] = ipiv[maxIndex];
                     ipiv[maxIndex] = temp;
-
+                    // swap rows
                     memcpy(temprow, A + i*n, n * sizeof(double));
                     memcpy(A + i*n, A + maxIndex*n, n * sizeof(double));
                     memcpy(A + maxIndex*n, temprow, n * sizeof(double));
                 }
             }
 
-            j=i+1;
-            for (j ; j < n; j++)
+            // factorization
+            for (j = i+1; j < n; j++)
             {
                 A[j*n + i] = A[j*n + i] / A[i*n + i];
-                int k=i+1;
-                for (k ; k < ib+b && k < n; k++)
+                int k;
+                for (k = i+1; k < ib+b && k < n; k++)
                 {
                     A[j*n + k] -= A[j*n +i] * A[i*n + k];
                 }
             }
         }
 
-        i=ib;
-        for (i ; i < ib+b && i < n; i++)
+        // update A(ib:end, end+1:n)
+        for (i = ib; i < ib+b && i < n; i++)
         {
-            j=ib+b;
-            for (j; j < n; j++)
+            for (j = ib+b; j < n; j++)
             {
                 sum = 0;
-                k=ib;
-                for (k ; k < i; k++)
+                for (k = ib; k < i; k++)
                 {
                     sum += A[i*n + k] * A[k*n + j];
                 }
@@ -330,11 +327,10 @@ int mydgetrf_block(double *A, int *ipiv, int n, int b)
             }
         }
 
-        i=ib+b;
-        for (i; i < n; i += b)
+        // update A(end+1:n, end+1:n)
+        for (i = ib+b; i < n; i += b)
         {
-            j=ib+b;
-            for (j; j < n; j += b)
+            for (j = ib+b; j < n; j += b)
             {
                 mydgemm(A, A, A, n, i, j, ib, b);
             }
