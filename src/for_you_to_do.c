@@ -1,9 +1,10 @@
 #include "../include/for_you_to_do.h"
 
-int get_block_size(){
+int get_block_size(i){
     //return the block size you'd like to use 
     /*add your code here */
-    return 126;
+    int res[]={100,126,128,150,200,63}
+    return res[i];
   
 }
 
