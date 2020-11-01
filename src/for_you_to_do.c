@@ -1,9 +1,10 @@
 #include "../include/for_you_to_do.h"
 
-int get_block_size(){
+int get_block_size(int i){
     //return the block size you'd like to use 
     /*add your code here */
-    return 126;
+    int a[] ={99,129,150,177,270}
+    return a[i];
   
 }
 
@@ -29,6 +30,7 @@ int get_block_size(){
 int mydgetrf(double *A, int *ipiv, int n) 
 {
     /* add your code here */
+    /*
     int i, maxIndex;
     double max;
     double *temprow = (double*) malloc(sizeof(double) * n);
@@ -80,6 +82,7 @@ int mydgetrf(double *A, int *ipiv, int n)
         }
     }
     free(temprow);
+    */
     return 0;
 }
 
@@ -113,6 +116,7 @@ int mydgetrf(double *A, int *ipiv, int n)
 void mydtrsv(char UPLO, double *A, double *B, int n, int *ipiv)
 {
     /* add your code here */
+    
     double *y = (double*) malloc(n * sizeof(double));
     int i, j;
     double sum;
@@ -149,6 +153,7 @@ void mydtrsv(char UPLO, double *A, double *B, int n, int *ipiv)
 
     memcpy(B, y, sizeof(double) * n);
     free(y);
+    
     return;
 }
 
