@@ -3,7 +3,7 @@
 int get_block_size(int i){
     //return the block size you'd like to use 
     /*add your code here */
-    int a[] ={99,129,150,177,270}
+    int a[] ={99,129,150,177,270};
     return a[i];
   
 }
