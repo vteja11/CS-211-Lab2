@@ -1,10 +1,11 @@
 #include "../include/for_you_to_do.h"
 
-int get_block_size(int i){
+int get_block_size(){
     //return the block size you'd like to use 
     /*add your code here */
-    int a[] ={99,129,150,177,270};
-    return a[i];
+    //int a[] ={99,129,150,177,270};
+    //return a[i];
+    return 99;
   
 }
 
@@ -30,7 +31,7 @@ int get_block_size(int i){
 int mydgetrf(double *A, int *ipiv, int n) 
 {
     /* add your code here */
-    /*
+    
     int i, maxIndex;
     double max;
     double *temprow = (double*) malloc(sizeof(double) * n);
@@ -51,7 +52,7 @@ int mydgetrf(double *A, int *ipiv, int n)
             }
         }
         if (max == 0)
-        {
+        {     
             return -1;
         }
         else
@@ -78,11 +79,10 @@ int mydgetrf(double *A, int *ipiv, int n)
             for (k = i+1; k < n; k++)
             {
                 A[j*n + k] -= A[j*n +i] * A[i*n + k];
-            }
+            }                   
         }
     }
     free(temprow);
-    */
     return 0;
 }
 
