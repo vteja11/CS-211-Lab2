@@ -172,82 +172,80 @@ void mydtrsv(char UPLO, double *A, double *B, int n, int *ipiv)
  * Same function as what you used in lab1, cache_part4.c : optimal( ... ).
  * 
  **/
-void mydgemm(double *A, double *B, double *C, int n, int i, int j, int k, int b)
+void mydgemm(double *A, double *B, double *C, int n, int i11, int j11, int k11, int b)
 {
     /* add your code here */
     /* please just copy from your lab1 function optimal( ... ) */
 
     //code from lab1
-    int i_tmp = i, j_tmp = j, k_tmp = k;
+    int i=i11,j=j11,k=k11;
+        for (i; i < n; i += b) {
+                j=0;
+                for (j; j < n; j += b) {
+                    k=0;
+                    for (k; k < n; k += b) {
+                        int i1 = i, j1 = j, k1 = k;
+                        int ni = i + b > n ? n : i + b;
+                        int nj = j + b > n ? n : j + b;
+                        int nk = k + b > n ? n : k + b;
+                        for (i1; i1 < ni; i1 += 3) {
+                            j1=j;
+                            for (j1; j1 < nj; j1 += 3) {
+                                int t = i1 * n + j1;
+                                int tt = t + n;
+                                int ttt = tt + n;
+                                register double c00 = C[t];
+                                register double c01 = C[t + 1];
+                                register double c02 = C[t + 2];
+                                register double c10 = C[tt];
+                                register double c11 = C[tt + 1];
+                                register double c12 = C[tt + 2];
+                                register double c20 = C[ttt];
+                                register double c21 = C[ttt + 1];
+                                register double c22 = C[ttt + 2];
 
-    //boundary for i
-    int n1 = i + b > n ? n : i + b;
-    //boundary for j
-    int n2 = j + b > n ? n : j + b;
-    //boundary for k
-    int n3 = k + b > n ? n : k + b;
+                                k1=k;
+                                for (k1; k1 < nk; k1 += 3) {
+                                    int l=0;
+                                    for (l; l < 3; l++) {
+                                        int ta = i1 * n + k1 + l;
+                                        int tta = ta + n;
+                                        int ttta = tta + n;
+                                        int tb = k1 * n + j1 + l * n;
+                                        register double a0 = A[ta];
+                                        register double a1 = A[tta];
+                                        register double a2 = A[ttta];
+                                        register double b0 = B[tb];
+                                        register double b1 = B[tb + 1];
+                                        register double b2 = B[tb + 2];
 
-    for (i_tmp = i; i_tmp < n1; i_tmp += 3)
-    {
-        for (j_tmp = j; j_tmp < n2; j_tmp += 3)
-        {
-            int t = i_tmp * n + j_tmp;
-            int t2 = t + n;
-            int t3 = t2 + n;
+                                        c00 += a0 * b0;
+                                        c01 += a0 * b1;
+                                        c02 += a0 * b2;
+                                        c10 += a1 * b0;
+                                        c11 += a1 * b1;
+                                        c12 += a1 * b2;
+                                        c20 += a2 * b0;
+                                        c21 += a2 * b1;
+                                        c22 += a2 * b2;
+                                    }
+                                }
+                                C[t] = c00;
+                                C[t + 1] = c01;
+                                C[t + 2] = c02;
+                                C[tt] = c10;
+                                C[tt + 1] = c11;
+                                C[tt + 2] = c12;
+                                C[ttt] = c20;
+                                C[ttt + 1] = c21;
+                                C[ttt + 2] = c22;
 
-            //registers for C
-            register double c1 = C[t];
-            register double c2 = C[t + 1];
-            register double c3 = C[t + 2];
-            register double c4 = C[t2];
-            register double c5 = C[t2 + 1];
-            register double c6 = C[t2 + 2];
-            register double c7 = C[t3];
-            register double c8 = C[t3 + 1];
-            register double c9 = C[t3 + 2];
-
-            for (k_tmp = k; k_tmp < n3; k_tmp += 3)
-            {
-                int l;
-                for (l = 0; l < 3; l++)
-                {
-                    int ta = i_tmp * n + k_tmp + l;
-                    int t2a = ta + n;
-                    int t3a = t2a + n;
-                    int tb = k_tmp * n + j_tmp + l * n;
-
-                    // registers for A 
-                    register double a0 = A[ta];
-                    register double a1 = A[t2a];
-                    register double a2 = A[t3a];
-                    // registers for B
-                    register double b0 = B[tb];
-                    register double b1 = B[tb + 1];
-                    register double b2 = B[tb + 2];
-
-                    c1 -= a0 * b0;
-                    c2 -= a0 * b1;
-                    c3 -= a0 * b2;
-                    c4 -= a1 * b0;
-                    c5 -= a1 * b1;
-                    c6 -= a1 * b2;
-                    c7 -= a2 * b0;
-                    c8 -= a2 * b1;
-                    c9 -= a2 * b2;
+                            }
+                        }
+                    }
                 }
             }
-            C[t] = c1;
-            C[t + 1] = c2;
-            C[t + 2] = c3;
-            C[t2] = c4;
-            C[t2 + 1] = c5;
-            C[t2 + 2] = c6;
-            C[t3] = c7;
-            C[t3 + 1] = c8;
-            C[t3 + 2] = c9;
-        }
-    }
-    return;
+
 }
 
 /**
