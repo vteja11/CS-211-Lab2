@@ -23,7 +23,7 @@
 int test_all_lu_functions()
 {
     int block_size=132;
-    int ni, nList[] = {1000, 2000, 3000, 4000, 5000};
+    int ni, nList[] = {1000};
     for (ni = 0; ni < sizeof(nList) / sizeof(nList[0]); ni++) {
         int n = nList[ni], i, j;
 
@@ -62,7 +62,7 @@ int test_all_lu_functions()
         printf("Elapsed time, MKL LAPACK: %lf seconds\n", t1 - t0);
 
         t0 = get_sec();    
-        //naive_lu(A2, B2, n);
+        naive_lu(A2, B2, n);
         t1 = get_sec();
         printf("Elapsed time, naive LU: %lf seconds\n", t1 - t0);
 
